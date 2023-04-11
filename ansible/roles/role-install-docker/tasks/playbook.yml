@@ -1,0 +1,37 @@
+---
+
+- name: Instalaçao do Docker
+  hosts: all
+  remote_user: azureuser
+  tasks:
+  - name: Instalar requisitos docker
+    ansible.builtin.apt:
+      name: ca-certificates, curl, gnupg
+      state: present
+
+  - name: Add chave para o repositorio Docker
+    ansible.builtin.apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add repositorio Docker
+    ansible.builtin.apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu bionic stable
+      state: present
+
+  - name: Instalar requisitos docker
+    ansible.builtin.apt:
+      name: docker-ce
+      state: present
+      update_cache: yes
+
+
+- name: Executar o container da aplicação
+  hosts: all
+  remote_user: azureuser
+  tasks:
+  - name: Criação do container
+    community.docker.docker_container:
+      name: site-lab-01
+      image: damirojr/laboratorio-01
+      published_ports: "80:80"
